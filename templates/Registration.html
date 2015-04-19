@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Registration</title>
+    <script type="text/javascript" src="modernizr.custom.30307.js"></script>
+    <script type="text/javascript" src="jslibrary.js"></script>
+   
+    <style>
+		#target, #src > img {border: thin solid black; padding: 2px; margin:4px;}
+		#target {height: 81px; width: 81px; text-align: center; display: table;}
+		#target > p {display: table-cell; vertical-align: middle;}
+		#target > img {margin: 1px;}
+		img.dragged {background-color: lightgrey;}
+	</style>
+</head>
+<body onload="initialLoad()">
+
+<form action="/insertdb" method="post"  name="reg_form">
+
+<table>
+
+<tbody>
+	<tr>
+		<td>
+			First Name: 
+		</td>
+		<td>
+			<input name="fn" type="text" id="firstname" placeholder="Enter first name"/>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			Last Name:
+		</td> 
+		<td>
+			<input name="ln" type="text" id ="lastname" placeholder="Enter last name"/>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			Email: 
+		</td>
+		<td>
+			<input name="email" type="email" id="email" placeholder="Enter your email address">
+		</td>
+	</tr>
+
+
+    <tr>
+        <td>
+            Age:
+        </td>
+        <td>
+            <input name="age" type="text" id="age" placeholder="Enter your age">
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            Sex:
+        </td>
+        <td>
+            <select name="sex" type="sex" id="sex">
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+            </select>
+        </td>
+    </tr>
+
+
+    <tr>
+		<td>
+			Password:
+		</td>
+		<td>
+			<div>
+			<input name = "password" type="password" onKeyUp="checkPassword()" placeholder="Enter your password"  title="Password must contain minimum 3 uppercase, 2 lowercase and 2 special characters" id="password" maxlength="24"/>
+				<div>
+					<progress value="0" id="progressBar"  max="100"></progress> 
+					<span id="progressBarLabel" class="progress"></span>
+					<input name = "pwdStrength" type="hidden" id="passwordStrength" value="">
+
+				</div>
+			</div>
+		</td>
+	</tr>
+
+	<tr>
+		<td>
+			Confirm Password: 
+		</td>
+		<td>
+			<input  type="password" id="cofirmPwd" name="cofirmPwd" placeholder="Must be same as password" maxlength="24"/>
+		</td>
+	</tr>
+
+
+
+
+	<tr>
+		<td>
+			D.O.B:
+		</td>
+		<td>
+			<input name="dob" type="date" id="date"  />
+		</td>
+	</tr>
+
+
+	<tr>
+		<td>
+			D.O.B with time:
+		</td>
+		<td>
+			<input name="dobTime" type="datetime" id="datetime" />
+		</td>
+	</tr>
+
+	<tr>
+		<td>
+			URL: 
+		</td>
+		<td>
+			<input name="url" type="text" id="url"/>
+		</td>
+	</tr>
+
+	<tr>
+		<td>
+			SSN: 
+		</td>
+		<td>
+			<input name="ssn" id="ssn" pattern="^\d{3}-\d{2}-\d{4}$" title="###-##-####"/>
+		</td>
+	</tr>
+
+	<tr>
+		<td>
+			Phone Number:
+		</td>
+		<td>
+			 <input name="phone" id="phone" type="tel" pattern="^\d{3}-\d{3}-\d{4}$" title="###-###-####"/>
+		</td>
+	</tr>
+
+
+	<tr>
+		<td>
+			Credit Card Number:
+		</td>
+		<td>
+			<input name="ccn" id="ccn" type="text" pattern="[0-9]{12,16}" title="A credit card number" />
+		</td>
+	</tr>
+
+	<tr>
+		<td>
+			Add image here:
+		</td>
+		<td>
+			<div id="target">
+			<p id="msg">Drag and Drop 'Apple' here.</p>
+			</div>
+			
+			<br>
+
+			<div id="src">
+			<img draggable="true" id="apple" src="Red_Apple.jpg" alt="apple" width="100" height="100"/>
+			<img draggable="true" id="banana" src="Banana.jpg" alt="banana" width="100" height="100"/>
+			<img draggable="true" id="cherries" src="cherries.jpeg" alt="cherries" width="100" height="100"/>
+			</div>
+		</td>
+	</tr>
+
+	<tr>
+	<td>
+	    <button  type="button" disabled value="submit" id="submitButton" onclick="return storeFormData();"> Submit</button>
+	</td>
+	</tr>
+
+
+	<tr>
+		<td>
+			Net online/offline status:
+		</td>
+		<td>
+			<div id="status">
+		<p id="state">ONLINE</p>
+		</div>
+		</td>
+	</tr>
+
+
+</tbody>
+</table>
+
+</form>
+
+<style>
+	.progress {
+	    font-family: "Arial";
+	    font-size: small;
+	    position: relative;
+	}
+</style>
+
+<div id="result"></div>
+
+
+<script type="text/javascript">
+
+
+var src = document.getElementById("src");
+var target = document.getElementById("target");
+var msg = document.getElementById("msg");
+var draggedID;
+target.ondragenter = handleDrag;
+target.ondragover = handleDrag;
+
+target.ondrop = function(e) {
+var newElem = document.getElementById(draggedID).cloneNode(false);
+target.innerHTML = "";
+target.appendChild(newElem);
+console.log("DraggedID "+draggedID)
+if(draggedID === "apple"){
+	console.log("inside if");
+	document.getElementById("submitButton").disabled = false;	
+}
+else{
+	document.getElementById("submitButton").disabled = true;	
+	alert("Drag and Drop Apple");
+}
+e.preventDefault();
+}
+function handleDrag(e) {
+e.preventDefault();
+}
+src.ondragstart = function(e) {
+draggedID = e.target.id;
+e.target.classList.add("dragged");
+}
+src.ondragend = function(e) {
+var elems = document.querySelectorAll(".dragged");
+for (var i = 0; i < elems.length; i++) {
+elems[i].classList.remove("dragged");
+}
+}
+
+
+
+function updateOnlineStatus(msg) {
+var condition = navigator.onLine ? "ONLINE" : "OFFLINE";
+var state = document.getElementById("state");
+state.innerHTML = condition;
+}
+
+function initialLoad()
+{
+
+	updateOnlineStatus("load");
+
+	if(window.addEventListener) {
+		window.addEventListener("offline", function () { updateOnlineStatus("offline");}, false);
+		window.addEventListener("online", function () { updateOnlineStatus("online");}, false); 
+	}else {
+		document.body.addEventListener("offline", function () { updateOnlineStatus("offline");}, false);
+		document.body.addEventListener("online", function () { updateOnlineStatus("online");}, false); 
+	}
+
+
+	//console.log('after attaching listeners');
+	var u = null;
+	if(navigator.onLine) {
+			//console.log('Online mode..');
+			u = readFromSessionStorage();
+			//console.log('reading from session.');
+
+	} else{
+			alert("You are offline: Data is being stored in localStorage");
+			//console.log('Offline mode:local storage is enabled')
+			u = readFromLocalStorage();
+			//console.log('reading from localstorage')
+
+	}
+	if(u==null)
+	{
+		//console.log("User data not stored");
+		return;
+	}
+	
+	//console.log(u);
+
+	var userObj = new User();
+	userObj.readFromJSONString(u);
+
+	document.getElementById("firstname").value = userObj.firstname;
+   document.getElementById("lastname").value = userObj.lastname;
+   document.getElementById("email").value = userObj.email;
+   document.getElementById("ssn").value = userObj.ssn;
+   document.getElementById("phone").value = userObj.phone;
+   document.getElementById("url").value = userObj.url;
+   document.getElementById("password").value = userObj.password;
+   document.getElementById("date").value = userObj.dob;
+   document.getElementById("datetime").value = userObj.dobWithTime;
+   document.getElementById("ccn").value = userObj.creditcardnumber;
+   checkPassword();
+
+
+}
+
+function checkPassword(){
+		var val = document.getElementById('password').value;
+		var upperCastCount = 0, lowerCaseCount = 0, specialCharsCount = 0;
+		var strength = 'Weak', score=0;
+
+		if(val.length == 0) {
+			//console.log('password is empty');
+			score = 0;
+			updateProgressBar(0,'')
+			return;
+		}
+
+		for(var i=0;i<val.length;i++) {
+		    if(/[A-Z]/.test(val.charAt(i))) upperCastCount++;
+		    if(/[a-z]/.test(val.charAt(i))) lowerCaseCount++;
+		    if(/[!,@,#,$,%,\^,&,*,?,_,~]/.test(val.charAt(i))) specialCharsCount++;
+		}
+
+
+		score = 10;
+
+
+		if(upperCastCount >= 3 && lowerCaseCount >= 2){
+
+			score = 20;
+			
+			if(specialCharsCount == 2){
+				strength = 'Normal' //30%
+				score = 30;
+			}
+			else if(specialCharsCount >= 3 && specialCharsCount <=5 ) {
+				strength = 'Medium' //65%
+				score = 65;
+			}
+			else if(specialCharsCount > 5){
+				strength = 'Strong' //100%
+				score = 100;
+			} 
+		}
+		updateProgressBar(score,strength)
+
+
+}
+
+function updateProgressBar(score,strength) {
+	document.getElementById('progressBarLabel').innerHTML = strength;
+	document.getElementById('progressBar').value=score;
+	document.getElementById('passwordStrength').value=strength;
+}
+
+
+function storeFormData(){	
+
+	var pwd = document.getElementById("password").value;
+	var cpwd = document.getElementById("cofirmPwd").value;
+
+	if(pwd == ""){
+		alert("Enter password");
+		return false;
+	}
+	if(pwd != cpwd){
+		alert("Two passwords should match");
+		return false;
+	}
+	
+	var u = new User();
+
+   u.firstname = document.getElementById("firstname").value;
+   u.lastname = document.getElementById("lastname").value;
+   u.email = document.getElementById("email").value;
+   u.age = document.getElementById("age").value;
+   u.sex = document.getElementById("sex").value;
+   u.ssn = document.getElementById("ssn").value;
+   u.phone = document.getElementById("phone").value;
+   u.url = document.getElementById("url").value;
+   u.password = document.getElementById("password").value;
+   u.passwordStrngth = document.getElementById("passwordStrength").value;;
+   u.dob = document.getElementById("date").value;
+   u.dobWithTime = document.getElementById("datetime").value;
+   u.creditcardnumber = document.getElementById("ccn").value;
+
+
+
+
+	if(!u.isValidEmail())
+   {
+   	alert("Enter valid Email ID");
+       return;
+   }
+
+
+
+   if(!u.isPhoneNumberFormatValid())
+   {
+    alert("Phone number format should be in this format: xxx-xxx-xxxx");
+    return;
+   }
+
+
+	if(navigator.onLine) {
+		saveToSessionStorage(u.toJSONString());
+	} else{
+		alert("You are offline: Data is being stored in localStorage");
+		saveToLocalStorage(u.toJSONString());
+	}
+
+
+    var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+    xmlhttp.open("POST", "/insertdb");
+    xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xmlhttp.onreadystatechange = function (resp) {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            console.log('recieved response');
+            console.log(xmlhttp.responseText);
+            alert('Registered successfully!');
+        }
+    }
+    xmlhttp.send(JSON.stringify(u));
+
+}
+
+</script>
+
+</body>
+</html>

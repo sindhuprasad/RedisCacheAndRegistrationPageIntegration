@@ -16,6 +16,7 @@ db = SQLAlchemy(app)
 #http://techarena51.com/index.php/flask-sqlalchemy-tutorial/
 #http://code.tutsplus.com/tutorials/intro-to-flask-signing-in-and-out--net-29982
 
+# connect to redis cache server
 redis = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 @app.route('/insertdb', methods=['POST'])
